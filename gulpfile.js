@@ -13,13 +13,18 @@ var gulp = require('gulp'),
     uglify = require('gulp-uglify'),
 
     imagemin = require('gulp-imagemin'),
+    pngquant = require('imagemin-pngquant'),//png图片压缩插件
 
+    connect = require('gulp-connect'),
+    webserver = require('gulp-webserver'),
+
+    rename = require('gulp-rename')//重命名  .min
+    clean = require('gulp-clean')//删除文件
     concat = require('gulp-concat'),//合并文件
     sourcemaps = require('gulp-sourcemaps'),//调试时sourcemaps
     livereload = require('gulp-livereload')//当监听文件发生变化时，浏览器自动刷新页面
-    
-    connect = require('gulp-connect'),
-    webserver = require('gulp-webserver')
+
+
     ;
 
 // =========================================================================HTML
@@ -74,6 +79,7 @@ gulp.task('cssMin', function () {
         .pipe(cssver())//给css文件里引用文件加版本号 文件MD5
         .pipe(cssmin(options))
         .pipe(autoprefixer(autoprefixeroptions))
+        .pipe(rename({ suffix: '.min' }))
         .pipe(gulp.dest('dist/cssMin'));
 });
 
@@ -121,7 +127,12 @@ gulp.task('jsConcat', function () {
 // image
 gulp.task('image', function () {
     gulp.src('src/img/**/*.{png,jpg,gif,ico}')
-        .pipe(imagemin())
+        .pipe(imagemin(
+            {
+                progressive: true,
+                use: [pngquant()] //使用pngquant来压缩png图片
+            }
+        ))
         .pipe(gulp.dest('dist/img'));
 });
 // imageMin
@@ -157,6 +168,21 @@ gulp.task('connect', function () {
 		livereload: true
 	});
 });
+
+
+
+
+
+
+
+
+// ==================================================================================clean
+gulp.task('clean', function() {
+    gulp.src('dist', {read: false})
+    .pipe(clean({force: true}));
+});
+
+
 // ==================================================================================WATCH
 // watch
 gulp.task('watch', function () {
@@ -164,12 +190,14 @@ gulp.task('watch', function () {
 });
 
 gulp.task('watchHtml', function() {
-    livereload.listen();
+    livereload.listen(); //要在这里调用listen()方法
     gulp.watch('src/html/*.html', ['html',htmlMin]);
 });
 
 // default
-gulp.task('default',[]);
+gulp.task('default',['clean'], function() {
+//   gulp.run('develop');
+});
 
 
 
