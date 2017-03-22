@@ -1,0 +1,5 @@
+html{
+    background: url(../img/1.jpg);
+    display: box;
+    flex: 1;
+}
