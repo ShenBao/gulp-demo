@@ -78,6 +78,7 @@ gulp-handlebars
 gulp-usemin
 gulp-uglify
 gulp-sourcemaps
+gulp-gh-pages
 
 其它一些关注度高的gulp插件
     gulp-inject
